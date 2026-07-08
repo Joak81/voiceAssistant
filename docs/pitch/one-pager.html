@@ -1,0 +1,372 @@
+<title>Recepcionista IA Fora de Horas — One-pager</title>
+<style>
+  :root {
+    --tinta: #182032;
+    --tinta-2: #4a5468;
+    --papel: #f6f7f9;
+    --cartao: #ffffff;
+    --linha: #dde1e8;
+    --ambar: #b97a1e;
+    --ambar-fundo: #fdf3e3;
+    --verde: #2e7d54;
+    --urgente: #c4553f;
+    --noite: #101623;
+    --noite-texto: #eef1f6;
+    --noite-suave: #98a3b8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --tinta: #e8ebf1;
+      --tinta-2: #9aa4b8;
+      --papel: #0d121d;
+      --cartao: #161d2c;
+      --linha: #2a3347;
+      --ambar: #e8a33d;
+      --ambar-fundo: #2a2415;
+      --verde: #58b98a;
+      --urgente: #e07a63;
+    }
+  }
+  :root[data-theme="dark"] {
+    --tinta: #e8ebf1;
+    --tinta-2: #9aa4b8;
+    --papel: #0d121d;
+    --cartao: #161d2c;
+    --linha: #2a3347;
+    --ambar: #e8a33d;
+    --ambar-fundo: #2a2415;
+    --verde: #58b98a;
+    --urgente: #e07a63;
+  }
+  :root[data-theme="light"] {
+    --tinta: #182032;
+    --tinta-2: #4a5468;
+    --papel: #f6f7f9;
+    --cartao: #ffffff;
+    --linha: #dde1e8;
+    --ambar: #b97a1e;
+    --ambar-fundo: #fdf3e3;
+    --verde: #2e7d54;
+    --urgente: #c4553f;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--papel);
+    color: var(--tinta);
+    font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .folha { max-width: 800px; margin: 0 auto; padding: 0 24px 56px; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+
+  /* ---------- cabeçalho noturno ---------- */
+  header {
+    background: var(--noite);
+    color: var(--noite-texto);
+    border-radius: 0 0 14px 14px;
+    padding: 40px 36px 34px;
+    position: relative;
+    overflow: hidden;
+  }
+  header .eyebrow {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #e8a33d;
+    margin: 0 0 14px;
+  }
+  header h1 {
+    font-size: clamp(26px, 4.6vw, 38px);
+    line-height: 1.12;
+    letter-spacing: -.015em;
+    font-weight: 750;
+    margin: 0 0 12px;
+    max-width: 21ch;
+    text-wrap: balance;
+  }
+  header p.sub {
+    color: var(--noite-suave);
+    max-width: 52ch;
+    margin: 0;
+    font-size: 16px;
+  }
+  header .janela {
+    position: absolute;
+    right: 36px;
+    top: 40px;
+    width: 96px;
+    height: 128px;
+    opacity: .95;
+  }
+  @media (max-width: 620px) { header .janela { display: none; } }
+
+  main section { margin-top: 40px; }
+  h2 {
+    font-size: 13px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ambar);
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-weight: 600;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  h2::after { content: ""; flex: 1; height: 1px; background: var(--linha); }
+  p { max-width: 68ch; }
+
+  .lead { font-size: 17px; }
+  .num-grande {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+    color: var(--urgente);
+    font-weight: 700;
+  }
+
+  /* ---------- 3 passos ---------- */
+  .passos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 620px) { .passos { grid-template-columns: 1fr; } }
+  .passo {
+    background: var(--cartao);
+    border: 1px solid var(--linha);
+    border-radius: 10px;
+    padding: 18px 16px 16px;
+  }
+  .passo .n {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: var(--ambar);
+    letter-spacing: .1em;
+  }
+  .passo h3 { margin: 6px 0 6px; font-size: 15.5px; letter-spacing: -.01em; }
+  .passo p { margin: 0; font-size: 13.5px; color: var(--tinta-2); }
+  .passo .mono { font-size: 12.5px; }
+
+  /* ---------- SMS mock ---------- */
+  .prova { display: grid; grid-template-columns: 1.15fr .85fr; gap: 22px; align-items: start; }
+  @media (max-width: 620px) { .prova { grid-template-columns: 1fr; } }
+  .sms {
+    background: var(--cartao);
+    border: 1px solid var(--linha);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 13px;
+  }
+  .sms .de {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 11px;
+    color: var(--tinta-2);
+    letter-spacing: .06em;
+    margin-bottom: 8px;
+  }
+  .sms .balao {
+    background: var(--ambar-fundo);
+    border-radius: 10px 10px 10px 3px;
+    padding: 10px 12px;
+    line-height: 1.5;
+  }
+  .sms .balao strong { color: var(--urgente); }
+
+  /* ---------- pricing ---------- */
+  table { width: 100%; border-collapse: collapse; background: var(--cartao); border: 1px solid var(--linha); border-radius: 10px; overflow: hidden; }
+  .tabela-scroll { overflow-x: auto; border-radius: 10px; }
+  th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--linha); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  th {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--tinta-2);
+    font-weight: 600;
+  }
+  td.preco {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  tr.destaque td { background: var(--ambar-fundo); }
+  td small { color: var(--tinta-2); display: block; margin-top: 2px; font-size: 12px; }
+
+  /* ---------- objeções ---------- */
+  .objecoes { display: grid; gap: 10px; }
+  .objecao {
+    background: var(--cartao);
+    border: 1px solid var(--linha);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13.5px;
+  }
+  .objecao b { display: block; margin-bottom: 3px; }
+  .objecao span { color: var(--tinta-2); }
+
+  /* ---------- CTA ---------- */
+  .cta {
+    margin-top: 44px;
+    background: var(--noite);
+    color: var(--noite-texto);
+    border-radius: 14px;
+    padding: 28px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .cta h2 { color: #e8a33d; margin: 0 0 6px; }
+  .cta h2::after { display: none; }
+  .cta p { margin: 0; color: var(--noite-suave); max-width: 46ch; }
+  .cta .numero {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: #e8a33d;
+    border: 1.5px dashed rgba(232, 163, 61, .55);
+    border-radius: 10px;
+    padding: 12px 18px;
+    white-space: nowrap;
+  }
+  @media (max-width: 400px) {
+    .cta .numero { white-space: normal; font-size: 16px; }
+  }
+  .rodape {
+    margin-top: 18px;
+    font-size: 12px;
+    color: var(--tinta-2);
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .rodape span::before { content: "✓ "; color: var(--verde); }
+
+  @media print {
+    body { background: #fff; }
+    header, .cta { border-radius: 0; }
+    .folha { padding: 0; max-width: none; }
+  }
+</style>
+
+<div class="folha">
+  <header>
+    <p class="eyebrow">Recepcionista IA · Fora de horas</p>
+    <h1>Quando a sua empresa fecha, quem atende as chamadas?</h1>
+    <p class="sub">Atendimento telefónico com inteligência artificial para empresas de arranjos e obras em casa — noites, fins de semana e feriados. Em português de Portugal.</p>
+    <svg class="janela" viewBox="0 0 96 128" role="img" aria-label="Prédio à noite com uma janela acesa">
+      <rect x="8" y="8" width="80" height="112" rx="4" fill="none" stroke="#3a4358" stroke-width="2"/>
+      <g fill="#232c40">
+        <rect x="20" y="20" width="16" height="16" rx="2"/><rect x="60" y="20" width="16" height="16" rx="2"/>
+        <rect x="20" y="48" width="16" height="16" rx="2"/><rect x="60" y="48" width="16" height="16" rx="2"/>
+        <rect x="20" y="76" width="16" height="16" rx="2"/>
+        <rect x="20" y="100" width="16" height="16" rx="2"/><rect x="60" y="100" width="16" height="16" rx="2"/>
+      </g>
+      <rect x="60" y="76" width="16" height="16" rx="2" fill="#e8a33d"/>
+    </svg>
+  </header>
+
+  <main>
+    <section>
+      <h2>O problema</h2>
+      <p class="lead">Um cano rebenta às onze da noite. O cliente liga a três empresas — e fica com a primeira que atende. Se a sua não atende, <strong>o serviço é do concorrente</strong>.</p>
+      <p>Uma urgência fora de horas vale <span class="num-grande">150–300&nbsp;€</span>. Duas chamadas perdidas por mês são <span class="num-grande">300–600&nbsp;€</span> que saem pela porta — mais o cliente, que não volta a ligar.</p>
+    </section>
+
+    <section>
+      <h2>Como funciona</h2>
+      <div class="passos">
+        <div class="passo">
+          <span class="n">PASSO 1</span>
+          <h3>Mantém o seu número</h3>
+          <p>Marca um código no telemóvel — <span class="mono">**61*…#</span> — e pronto: quando não atende, a assistente atende por si. Nada a instalar, desativa quando quiser.</p>
+        </div>
+        <div class="passo">
+          <span class="n">PASSO 2</span>
+          <h3>A assistente resolve</h3>
+          <p>Identifica-se como assistente virtual, distingue urgência de pedido normal, dá instruções de segurança, marca visitas na sua agenda e regista recados.</p>
+        </div>
+        <div class="passo">
+          <span class="n">PASSO 3</span>
+          <h3>Você fica a saber tudo</h3>
+          <p>Urgências chegam por SMS ao técnico de serviço em segundos. Às 8 da manhã recebe o relatório: chamadas, marcações, recados e gravações.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>A prova, não a promessa</h2>
+      <div class="prova">
+        <div>
+          <p><strong>Ligue para o número de demonstração e diga que rebentou um cano.</strong> Vai ouvir a triagem, as perguntas certas — nome, morada, telemóvel, um de cada vez — e a instrução para fechar a torneira de segurança.</p>
+          <p>Segundos depois, este SMS chega ao telemóvel do técnico de serviço. É isto que deixa de perder.</p>
+        </div>
+        <div class="sms" role="img" aria-label="Exemplo do SMS de urgência">
+          <div class="de">SMS · técnico de serviço · 23:41</div>
+          <div class="balao">
+            [Arranjos Horizonte] <strong>URGÊNCIA fora de horas</strong><br>
+            Cliente: Maria Silva<br>
+            Morada: Rua das Flores 12, 2.º Esq, Lisboa<br>
+            Contacto: <span class="mono">912 345 678</span><br>
+            Problema: cano rebentado na cozinha<br>
+            Ligar ao cliente em 15–30 min.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Planos</h2>
+      <div class="tabela-scroll">
+      <table>
+        <tr>
+          <th>Plano</th><th>Inclui</th><th>Mensalidade</th>
+        </tr>
+        <tr>
+          <td><strong>Base</strong></td>
+          <td>Atendimento 24/7 fora de horas, triagem de urgências, SMS ao técnico, recados, relatório diário<small>Para começar a não perder chamadas</small></td>
+          <td class="preco">79 €/mês</td>
+        </tr>
+        <tr class="destaque">
+          <td><strong>Pro</strong></td>
+          <td>Tudo do Base + marcação de visitas diretamente na sua agenda<small>O mais escolhido</small></td>
+          <td class="preco">129 €/mês</td>
+        </tr>
+        <tr>
+          <td><strong>Premium</strong></td>
+          <td>Tudo do Pro + SMS de confirmação ao cliente e atendimento multi-idioma<small>Para zonas com turistas e estrangeiros</small></td>
+          <td class="preco">179 €/mês</td>
+        </tr>
+        <tr>
+          <td colspan="2">Configuração inicial única (número, agenda, textos aprovados por si, testes)</td>
+          <td class="preco">200–400 €</td>
+        </tr>
+      </table>
+      </div>
+      <p style="margin-top:12px; font-size:13.5px; color:var(--tinta-2);">Conta simples: <strong>uma única urgência recuperada paga dois meses</strong> do plano Pro.</p>
+    </section>
+
+    <section>
+      <h2>As perguntas que vai querer fazer</h2>
+      <div class="objecoes">
+        <div class="objecao"><b>"As pessoas desligam a máquinas."</b><span>Preferem uma máquina que resolve — e que aciona o técnico em minuto e meio — a um voicemail que ninguém ouve. E identifica-se sempre como assistente virtual: ninguém é enganado.</span></div>
+        <div class="objecao"><b>"E se disser disparates?"</b><span>Só responde ao que for aprovado por si: preços, zonas, horários. Ao resto responde "fica registado e é-lhe dada resposta amanhã". Todas as chamadas ficam gravadas e resumidas.</span></div>
+        <div class="objecao"><b>"Isto compromete-me a preços?"</b><span>Nunca. A assistente diz apenas "a partir de X euros, o técnico confirma no local" — a decisão comercial é sempre sua.</span></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="cta">
+    <div>
+      <h2>Experimente agora</h2>
+      <p>14 dias sem compromisso. Fica ativo em 15 minutos — se quiser, ainda esta noite.</p>
+    </div>
+    <div class="numero">LIGUE · +X XXX XXX XXX</div>
+  </div>
+  <div class="rodape">
+    <span>Identifica-se como IA em todas as chamadas</span>
+    <span>Aviso de gravação (RGPD)</span>
+    <span>Cancela quando quiser</span>
+  </div>
+</div>

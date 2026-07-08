@@ -1,0 +1,274 @@
+<title>Arquitetura — Recepcionista IA Fora de Horas</title>
+<style>
+  :root {
+    --tinta: #182032;
+    --tinta-2: #4a5468;
+    --papel: #f4f5f8;
+    --cartao: #ffffff;
+    --linha: #d9dde6;
+    --ambar: #b97a1e;
+    --ambar-vivo: #e8a33d;
+    --ambar-fundo: #fdf3e3;
+    --verde: #2e7d54;
+    --verde-fundo: #e8f4ed;
+    --urgente: #c4553f;
+    --urgente-fundo: #fbeae6;
+    --noite: #101623;
+    --noite-texto: #eef1f6;
+    --noite-suave: #98a3b8;
+    --fio: #b8bfcc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --tinta: #e8ebf1; --tinta-2: #9aa4b8;
+      --papel: #0b0f18; --cartao: #151c2b; --linha: #29324a;
+      --ambar: #e8a33d; --ambar-fundo: #29231a;
+      --verde: #58b98a; --verde-fundo: #16281f;
+      --urgente: #e07a63; --urgente-fundo: #2e1c17;
+      --fio: #46506a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --tinta: #e8ebf1; --tinta-2: #9aa4b8;
+    --papel: #0b0f18; --cartao: #151c2b; --linha: #29324a;
+    --ambar: #e8a33d; --ambar-fundo: #29231a;
+    --verde: #58b98a; --verde-fundo: #16281f;
+    --urgente: #e07a63; --urgente-fundo: #2e1c17;
+    --fio: #46506a;
+  }
+  :root[data-theme="light"] {
+    --tinta: #182032; --tinta-2: #4a5468;
+    --papel: #f4f5f8; --cartao: #ffffff; --linha: #d9dde6;
+    --ambar: #b97a1e; --ambar-fundo: #fdf3e3;
+    --verde: #2e7d54; --verde-fundo: #e8f4ed;
+    --urgente: #c4553f; --urgente-fundo: #fbeae6;
+    --fio: #b8bfcc;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--papel); color: var(--tinta);
+    font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .pagina { max-width: 940px; margin: 0 auto; padding: 40px 24px 64px; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+
+  header h1 { font-size: clamp(24px, 4vw, 32px); font-weight: 750; letter-spacing: -.015em; margin: 6px 0 8px; text-wrap: balance; }
+  header .eyebrow { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--ambar); margin: 0; }
+  header p.sub { color: var(--tinta-2); max-width: 62ch; margin: 0; }
+
+  h2 {
+    font-size: 13px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ambar); font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-weight: 600; margin: 48px 0 16px; display: flex; align-items: center; gap: 10px;
+  }
+  h2::after { content: ""; flex: 1; height: 1px; background: var(--linha); }
+
+  .quadro { background: var(--cartao); border: 1px solid var(--linha); border-radius: 12px; padding: 18px; overflow-x: auto; }
+  .legenda { display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px; color: var(--tinta-2); margin-top: 10px; }
+  .legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+
+  /* mapa do sistema (SVG) */
+  svg.mapa { width: 100%; min-width: 720px; height: auto; display: block; }
+  svg.mapa .caixa { fill: var(--cartao); stroke: var(--fio); stroke-width: 1.4; rx: 8; }
+  svg.mapa .caixa-noite { fill: var(--noite); stroke: none; }
+  svg.mapa .caixa-ambar { fill: var(--ambar-fundo); stroke: var(--ambar); }
+  svg.mapa .t { font: 600 13px system-ui, sans-serif; fill: var(--tinta); }
+  svg.mapa .t-noite { fill: var(--noite-texto); }
+  svg.mapa .d { font: 11px system-ui, sans-serif; fill: var(--tinta-2); }
+  svg.mapa .d-noite { fill: var(--noite-suave); }
+  svg.mapa .rotulo { font: 10.5px ui-monospace, Menlo, monospace; fill: var(--tinta-2); }
+  svg.mapa .fio { stroke: var(--fio); stroke-width: 1.6; fill: none; }
+  svg.mapa .fio-ambar { stroke: var(--ambar-vivo); }
+  svg.mapa .fio-urgente { stroke: var(--urgente); }
+  svg.mapa .fio-verde { stroke: var(--verde); }
+
+  /* fluxos de chamada (timelines) */
+  .fluxos { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 760px) { .fluxos { grid-template-columns: 1fr; } }
+  .fluxo { background: var(--cartao); border: 1px solid var(--linha); border-radius: 12px; padding: 20px; }
+  .fluxo header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .fluxo h3 { margin: 0; font-size: 16px; letter-spacing: -.01em; }
+  .selo { font-family: ui-monospace, Menlo, monospace; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; padding: 3px 9px; border-radius: 99px; font-weight: 700; }
+  .selo-urgente { background: var(--urgente-fundo); color: var(--urgente); }
+  .selo-verde { background: var(--verde-fundo); color: var(--verde); }
+  ol.passos { list-style: none; margin: 0; padding: 0; }
+  ol.passos li { position: relative; padding: 0 0 16px 26px; font-size: 13.5px; }
+  ol.passos li::before {
+    content: ""; position: absolute; left: 6px; top: 7px;
+    width: 8px; height: 8px; border-radius: 50%; background: var(--fio);
+  }
+  ol.passos li::after {
+    content: ""; position: absolute; left: 9.5px; top: 19px; bottom: -3px;
+    width: 1.5px; background: var(--linha);
+  }
+  ol.passos li:last-child::after { display: none; }
+  ol.passos li.marco::before { background: var(--ambar-vivo); box-shadow: 0 0 0 3px var(--ambar-fundo); }
+  ol.passos li.alerta::before { background: var(--urgente); box-shadow: 0 0 0 3px var(--urgente-fundo); }
+  ol.passos li.ok::before { background: var(--verde); box-shadow: 0 0 0 3px var(--verde-fundo); }
+  ol.passos b { display: block; }
+  ol.passos span { color: var(--tinta-2); }
+  ol.passos .fala { font-style: italic; }
+  .tempo { font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: var(--tinta-2); float: right; font-variant-numeric: tabular-nums; }
+
+  /* infra em produção */
+  .infra-wrap { display: grid; grid-template-columns: 1fr 56px 1fr 56px 1fr 56px 1fr; gap: 8px; align-items: center; }
+  .infra-wrap .no { background: var(--cartao); border: 1px solid var(--linha); border-radius: 10px; padding: 14px; position: relative; }
+  .infra-wrap .no h4 { margin: 0 0 4px; font-size: 13.5px; }
+  .infra-wrap .no p { margin: 0; font-size: 12px; color: var(--tinta-2); }
+  .infra-wrap .seta { display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 4px; }
+  .infra-wrap .seta .cod { font-family: ui-monospace, Menlo, monospace; font-size: 10px; color: var(--ambar); white-space: nowrap; margin-bottom: 4px; }
+  .infra-wrap .seta svg { width: 100%; height: 12px; }
+  .aviso {
+    margin-top: 14px; padding: 12px 16px; border-radius: 10px;
+    background: var(--urgente-fundo); color: var(--urgente); font-size: 13px; font-weight: 550;
+  }
+
+  /* princípios */
+  .principios { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  @media (max-width: 700px) { .principios { grid-template-columns: 1fr; } }
+  .principio { background: var(--cartao); border: 1px solid var(--linha); border-radius: 10px; padding: 16px; font-size: 13.5px; }
+  .principio b { display: block; margin-bottom: 4px; }
+  .principio span { color: var(--tinta-2); }
+  .principio .mono { font-size: 12px; }
+</style>
+
+<div class="pagina">
+  <header>
+    <p class="eyebrow">Arquitetura técnica · POC jul/2026</p>
+    <h1>Como funciona o atendimento, do toque ao relatório</h1>
+    <p class="sub">Quatro peças: a plataforma de voz (Retell AI), o serviço de webhooks (FastAPI no Railway), a agenda (Cal.com) e as notificações (Twilio SMS + email). O cliente final só vê uma coisa: alguém que atende.</p>
+  </header>
+
+  <h2>Mapa do sistema</h2>
+  <div class="quadro">
+    <svg class="mapa" viewBox="0 0 900 430" role="img" aria-label="Mapa do sistema: chamada desviada para o agente Retell, que usa Cal.com, webhooks no Railway, Twilio e email">
+      <!-- cliente -->
+      <rect class="caixa" x="16" y="60" width="150" height="64" rx="8"/>
+      <text class="t" x="32" y="86">Cliente final</text>
+      <text class="d" x="32" y="104">liga fora de horas</text>
+
+      <!-- numero empresa -->
+      <rect class="caixa" x="16" y="180" width="150" height="64" rx="8"/>
+      <text class="t" x="32" y="206">Número da empresa</text>
+      <text class="d" x="32" y="224">o de sempre — não muda</text>
+
+      <path class="fio" d="M91 124 L91 180" marker-end="url(#seta)"/>
+
+      <!-- desvio -->
+      <path class="fio fio-ambar" d="M166 212 C 230 212, 230 212, 292 212" marker-end="url(#seta-ambar)"/>
+      <text class="rotulo" x="180" y="200">desvio condicional **61*</text>
+
+      <!-- retell -->
+      <rect class="caixa caixa-noite" x="292" y="120" width="240" height="190" rx="12"/>
+      <text class="t t-noite" x="312" y="150">Agente de voz · Retell AI</text>
+      <text class="d d-noite" x="312" y="172">Prompt PT-PT v1.1 · GPT-4.1</text>
+      <text class="d d-noite" x="312" y="190">Voz ElevenLabs flash v2.5 (pt-PT)</text>
+      <text class="d d-noite" x="312" y="208">Identifica-se como IA + aviso gravação</text>
+      <text class="d d-noite" x="312" y="234">— triagem urgência / normal</text>
+      <text class="d d-noite" x="312" y="252">— instruções de segurança</text>
+      <text class="d d-noite" x="312" y="270">— marca, regista, aciona</text>
+      <rect x="312" y="282" width="10" height="10" rx="2" fill="#e8a33d"/>
+      <text class="d d-noite" x="330" y="291">análise pós-chamada automática</text>
+
+      <!-- calcom -->
+      <rect class="caixa caixa-ambar" x="640" y="60" width="180" height="70" rx="8"/>
+      <text class="t" x="656" y="86">Cal.com</text>
+      <text class="d" x="656" y="104">agenda + marcações (nativo)</text>
+      <path class="fio fio-ambar" d="M532 170 C 590 150, 590 110, 640 100" marker-end="url(#seta-ambar)"/>
+      <text class="rotulo" x="546" y="128">consultar_agenda · marcar_servico</text>
+
+      <!-- railway -->
+      <rect class="caixa" x="640" y="180" width="180" height="110" rx="8"/>
+      <text class="t" x="656" y="206">Webhooks · Railway</text>
+      <text class="d" x="656" y="224">FastAPI + SQLite (este repo)</text>
+      <text class="d mono" x="656" y="246">notificar_tecnico</text>
+      <text class="d mono" x="656" y="262">registar_recado</text>
+      <text class="d mono" x="656" y="278">/retell/webhook</text>
+      <path class="fio" d="M532 220 L640 220" marker-end="url(#seta)"/>
+      <text class="rotulo" x="546" y="210">HTTPS assinado (&lt;1s)</text>
+
+      <!-- twilio/dono -->
+      <rect class="caixa" x="640" y="330" width="180" height="60" rx="8"/>
+      <text class="t" x="656" y="354">Twilio SMS → dono</text>
+      <text class="d" x="656" y="372">urgências em segundos</text>
+      <path class="fio fio-urgente" d="M730 290 L730 330" marker-end="url(#seta-urgente)"/>
+
+      <!-- email -->
+      <rect class="caixa" x="400" y="330" width="200" height="60" rx="8"/>
+      <text class="t" x="416" y="354">Email → dono</text>
+      <text class="d" x="416" y="372">relatório diário às 08:00</text>
+      <path class="fio fio-verde" d="M640 250 C 560 250, 520 290, 505 330" marker-end="url(#seta-verde)"/>
+
+      <defs>
+        <marker id="seta" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 z" fill="var(--fio)"/>
+        </marker>
+        <marker id="seta-ambar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 z" fill="var(--ambar-vivo)"/>
+        </marker>
+        <marker id="seta-urgente" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 z" fill="var(--urgente)"/>
+        </marker>
+        <marker id="seta-verde" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 z" fill="var(--verde)"/>
+        </marker>
+      </defs>
+    </svg>
+    <div class="legenda">
+      <span><i style="background:var(--ambar-vivo)"></i>caminho da chamada / agenda</span>
+      <span><i style="background:var(--urgente)"></i>alerta de urgência</span>
+      <span><i style="background:var(--verde)"></i>relatório diário</span>
+    </div>
+  </div>
+
+  <h2>As duas chamadas que importam</h2>
+  <div class="fluxos">
+    <div class="fluxo">
+      <header><h3>Urgência</h3><span class="selo selo-urgente">cano rebentado · 23:38</span></header>
+      <ol class="passos">
+        <li class="marco"><span class="tempo">00:00</span><b>Atende ao primeiro toque</b><span class="fala">"…sou a Marta, a assistente virtual. Esta chamada é atendida por inteligência artificial e pode ser gravada…"</span></li>
+        <li><span class="tempo">00:15</span><b>Triagem</b><span>Água a correr sem controlo → classifica como urgência.</span></li>
+        <li><span class="tempo">00:40</span><b>Recolhe os três dados</b><span>Nome, morada com andar, telemóvel — um de cada vez.</span></li>
+        <li><span class="tempo">01:10</span><b>Instrução de segurança</b><span class="fala">"Feche a torneira de segurança geral, junto ao contador da água."</span></li>
+        <li class="alerta"><span class="tempo">01:25</span><b>Aciona o técnico</b><span>Chama <span class="mono">notificar_tecnico</span> → o webhook grava e dispara o SMS em segundos.</span></li>
+        <li><span class="tempo">01:35</span><b>Gera expectativa certa</b><span class="fala">"Vai ser contactado em 15 a 30 minutos. A deslocação é a partir de 60 euros — o técnico confirma."</span> Nunca hora exata, nunca preço fechado.</li>
+        <li class="ok"><span class="tempo">01:50</span><b>Pós-chamada</b><span>Resumo, sentimento e classificação gravados para o relatório da manhã.</span></li>
+      </ol>
+    </div>
+    <div class="fluxo">
+      <header><h3>Pedido normal</h3><span class="selo selo-verde">montagem de móveis · sáb 10:20</span></header>
+      <ol class="passos">
+        <li class="marco"><b>Abertura idêntica</b><span>Mesma identificação como IA e aviso de gravação — sempre.</span></li>
+        <li><b>Percebe o serviço</b><span>Uma ou duas perguntas, sem interrogatório.</span></li>
+        <li class="marco"><b>Consulta a agenda real</b><span><span class="mono">consultar_agenda</span> → slots livres do Cal.com. Propõe no máximo duas opções.</span></li>
+        <li><b>Recolhe os dados</b><span>Nome, morada e telemóvel para a visita.</span></li>
+        <li class="ok"><b>Marca e confirma em voz alta</b><span><span class="mono">marcar_servico</span> → visita criada na agenda; dia, hora e morada confirmados; email/SMS de confirmação do calendário.</span></li>
+        <li><b>Sem vaga ou orçamento de obra?</b><span><span class="mono">registar_recado</span> — o escritório liga na manhã seguinte.</span></li>
+        <li class="ok"><b>Pós-chamada</b><span>Marcação contabilizada no relatório diário.</span></li>
+      </ol>
+    </div>
+  </div>
+
+  <h2>Telefonia em produção (número português)</h2>
+  <div class="quadro">
+    <div class="infra-wrap" style="min-width:700px;">
+      <div class="no"><h4>Número da empresa</h4><p>MEO / NOS / Vodafone — o cliente mantém o número de sempre</p></div>
+      <div class="seta"><span class="cod">**61*…#</span><svg viewBox="0 0 56 12"><path d="M0 6 H46" stroke="var(--ambar-vivo)" stroke-width="1.6"/><path d="M46 1 L56 6 L46 11 z" fill="var(--ambar-vivo)"/></svg></div>
+      <div class="no"><h4>Número +351 próprio</h4><p>Telnyx (~$1/mês) ou Twilio — o desvio custa uma chamada nacional</p></div>
+      <div class="seta"><span class="cod">SIP trunk</span><svg viewBox="0 0 56 12"><path d="M0 6 H46" stroke="var(--fio)" stroke-width="1.6"/><path d="M46 1 L56 6 L46 11 z" fill="var(--fio)"/></svg></div>
+      <div class="no"><h4>Importação Retell</h4><p><span class="mono">sip:sip.retellai.com</span> · auth por credenciais ou IP allowlist</p></div>
+      <div class="seta"><svg viewBox="0 0 56 12"><path d="M0 6 H46" stroke="var(--fio)" stroke-width="1.6"/><path d="M46 1 L56 6 L46 11 z" fill="var(--fio)"/></svg></div>
+      <div class="no"><h4>Agente</h4><p>o mesmo de sempre — nada mais muda</p></div>
+    </div>
+    <div class="aviso">Na POC usa-se um número dos EUA (a Retell só vende US/CA). Em produção o número tem de ser +351: desviar chamadas para um número estrangeiro seria cobrado ao dono como chamada internacional.</div>
+  </div>
+
+  <h2>Princípios de engenharia</h2>
+  <div class="principios">
+    <div class="principio"><b>Responder antes de trabalhar</b><span>As custom functions respondem em &lt;1s (o cliente está em linha); SMS e escritas seguem em background. A Retell corta funções lentas e a chamada fica em silêncio.</span></div>
+    <div class="principio"><b>Tudo assinado</b><span>Cada pedido da Retell traz <span class="mono">X-Retell-Signature</span> (HMAC-SHA256, janela de 5 min) — o serviço rejeita tudo o resto.</span></div>
+    <div class="principio"><b>Menos código no caminho crítico</b><span>A marcação usa os tools nativos Cal.com da Retell; o resumo vem da análise pós-chamada da plataforma. O nosso código fica só onde acrescenta valor: urgências, recados, relatório.</span></div>
+    <div class="principio"><b>Compliance por construção</b><span>Identificação como IA e aviso de gravação estão na primeira frase fixa do agente (<span class="mono">begin_message</span>) — não dependem do humor do modelo.</span></div>
+  </div>
+</div>

@@ -1,6 +1,7 @@
 # Secrets — nunca commitar (ver CLAUDE.md)
 .env
 .env.*
+!.env.example
 
 # Python
 __pycache__/
