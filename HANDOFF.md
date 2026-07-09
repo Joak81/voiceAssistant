@@ -9,7 +9,8 @@ Montar o negócio de atendimento telefónico por IA fora de horas ("AI reception
 ## 2. Estado atual
 **Fases 0–2 da POC concluídas** (09-07-2026): o sistema está VIVO em produção.
 - Railway: `https://voiceassistant-production-4750.up.railway.app` (projeto voice-onboard, volume /data, variáveis todas definidas; /health OK).
-- Agente Retell: `agent_27aace7dfe1c09958ca3627b54` (LLM `llm_a28bdf870e2e5fad80c867b33b64`), 5 tools, pt-PT, voz default `11labs-Adrian` (PT-PT por escolher).
+- Agente Retell: `agent_27aace7dfe1c09958ca3627b54` (LLM `llm_a28bdf870e2e5fad80c867b33b64`), 5 tools, pt-PT.
+- **Voz PT-PT ativa**: "Marta – Warm Confident" (ElevenLabs `bBNhdwrIjl4fcVYiRbT2` → Retell `custom_voice_1ab1171f938943441b9e3c591a`, flash v2.5). Alternativas já adicionadas à conta, troca por PATCH do agente: Joana `custom_voice_df7c523638bfb6d55c89304cac`, Maria `custom_voice_63b69136a882b44168c0286085`. Só existe 1 voz nativa "portuguesa" na Retell e é PT-BR — usar sempre community voices PT-PT da ElevenLabs.
 - **Número demo: +1 (270) 716-4091** — associado ao agente, pronto a atender.
 - Twilio: número +1 208 974 8700 a enviar SMS (teste real recebido no telemóvel do dono, +351 919 000 957, verificado).
 - Cal.com validado (event type 6253265, 48 slots). Gmail configurado (envio testa-se no relatório das 08:00).
