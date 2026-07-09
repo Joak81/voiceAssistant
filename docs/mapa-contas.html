@@ -1,0 +1,261 @@
+<title>Mapa de contas — quem faz o quê</title>
+<style>
+  :root {
+    --tinta: #182032; --tinta-2: #4a5468;
+    --papel: #f4f5f8; --cartao: #ffffff; --linha: #d9dde6;
+    --ambar: #b97a1e; --ambar-vivo: #e8a33d; --ambar-fundo: #fdf3e3;
+    --verde: #2e7d54; --verde-fundo: #e8f4ed;
+    --urgente: #c4553f; --urgente-fundo: #fbeae6;
+    --azul: #3661a8; --azul-fundo: #e9eff9;
+    --noite: #101623; --noite-texto: #eef1f6; --noite-suave: #98a3b8;
+    --fio: #b8bfcc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --tinta: #e8ebf1; --tinta-2: #9aa4b8;
+      --papel: #0b0f18; --cartao: #151c2b; --linha: #29324a;
+      --ambar: #e8a33d; --ambar-fundo: #29231a;
+      --verde: #58b98a; --verde-fundo: #16281f;
+      --urgente: #e07a63; --urgente-fundo: #2e1c17;
+      --azul: #7ba3e0; --azul-fundo: #17233a;
+      --fio: #46506a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --tinta: #e8ebf1; --tinta-2: #9aa4b8;
+    --papel: #0b0f18; --cartao: #151c2b; --linha: #29324a;
+    --ambar: #e8a33d; --ambar-fundo: #29231a;
+    --verde: #58b98a; --verde-fundo: #16281f;
+    --urgente: #e07a63; --urgente-fundo: #2e1c17;
+    --azul: #7ba3e0; --azul-fundo: #17233a;
+    --fio: #46506a;
+  }
+  :root[data-theme="light"] {
+    --tinta: #182032; --tinta-2: #4a5468;
+    --papel: #f4f5f8; --cartao: #ffffff; --linha: #d9dde6;
+    --ambar: #b97a1e; --ambar-fundo: #fdf3e3;
+    --verde: #2e7d54; --verde-fundo: #e8f4ed;
+    --urgente: #c4553f; --urgente-fundo: #fbeae6;
+    --azul: #3661a8; --azul-fundo: #e9eff9;
+    --fio: #b8bfcc;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--papel); color: var(--tinta);
+         font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .pagina { max-width: 920px; margin: 0 auto; padding: 40px 24px 64px; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+
+  header h1 { font-size: clamp(24px, 4vw, 32px); font-weight: 750; letter-spacing: -.015em; margin: 6px 0 8px; text-wrap: balance; }
+  .eyebrow { font-family: ui-monospace, Menlo, monospace; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--ambar); margin: 0; }
+  header p.sub { color: var(--tinta-2); max-width: 64ch; margin: 0; }
+
+  h2 { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--ambar);
+       font-family: ui-monospace, Menlo, monospace; font-weight: 600;
+       margin: 44px 0 16px; display: flex; align-items: center; gap: 10px; }
+  h2::after { content: ""; flex: 1; height: 1px; background: var(--linha); }
+
+  /* os dois números */
+  .dois { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 680px) { .dois { grid-template-columns: 1fr; } }
+  .numero-card { border-radius: 14px; padding: 22px; border: 1.5px solid var(--linha); background: var(--cartao); }
+  .numero-card.atende { border-color: var(--ambar-vivo); }
+  .numero-card.envia { border-color: var(--azul); }
+  .numero-card .tag { font-family: ui-monospace, Menlo, monospace; font-size: 10.5px; letter-spacing: .12em;
+                      text-transform: uppercase; font-weight: 700; padding: 4px 10px; border-radius: 99px; }
+  .atende .tag { background: var(--ambar-fundo); color: var(--ambar); }
+  .envia .tag { background: var(--azul-fundo); color: var(--azul); }
+  .numero-card h3 { margin: 12px 0 4px; font-size: 19px; letter-spacing: -.01em; }
+  .numero-card .num { font-family: ui-monospace, Menlo, monospace; font-size: 15px; color: var(--tinta-2); margin-bottom: 10px; }
+  .numero-card p { margin: 0 0 8px; font-size: 14px; color: var(--tinta-2); }
+  .numero-card p b { color: var(--tinta); }
+  .seta-direcao { font-size: 26px; line-height: 1; margin-bottom: 6px; }
+
+  /* diagrama do fluxo */
+  .quadro { background: var(--cartao); border: 1px solid var(--linha); border-radius: 12px; padding: 18px; overflow-x: auto; }
+  svg.fluxo { width: 100%; min-width: 760px; height: auto; display: block; }
+  svg.fluxo .caixa { fill: var(--cartao); stroke: var(--fio); stroke-width: 1.4; }
+  svg.fluxo .caixa-noite { fill: var(--noite); }
+  svg.fluxo .caixa-ambar { fill: var(--ambar-fundo); stroke: var(--ambar-vivo); }
+  svg.fluxo .caixa-azul { fill: var(--azul-fundo); stroke: var(--azul); }
+  svg.fluxo .caixa-verde { fill: var(--verde-fundo); stroke: var(--verde); }
+  svg.fluxo .t { font: 600 13px system-ui, sans-serif; fill: var(--tinta); }
+  svg.fluxo .t-noite { fill: var(--noite-texto); }
+  svg.fluxo .d { font: 11px system-ui, sans-serif; fill: var(--tinta-2); }
+  svg.fluxo .d-noite { fill: var(--noite-suave); }
+  svg.fluxo .rot { font: 10.5px ui-monospace, Menlo, monospace; fill: var(--tinta-2); }
+  svg.fluxo .fio { stroke: var(--fio); stroke-width: 1.6; fill: none; }
+  svg.fluxo .fio-ambar { stroke: var(--ambar-vivo); stroke-width: 2; }
+  svg.fluxo .fio-urgente { stroke: var(--urgente); stroke-width: 2; }
+  svg.fluxo .fio-verde { stroke: var(--verde); }
+  svg.fluxo .fio-azul { stroke: var(--azul); stroke-width: 2; }
+  .legenda { display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px; color: var(--tinta-2); margin-top: 10px; }
+  .legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+
+  /* cartões das contas */
+  .contas { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  @media (max-width: 680px) { .contas { grid-template-columns: 1fr; } }
+  .conta { background: var(--cartao); border: 1px solid var(--linha); border-radius: 12px; padding: 18px; }
+  .conta header { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+  .conta h3 { margin: 0; font-size: 16px; }
+  .conta .preco { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--verde); font-weight: 700; white-space: nowrap; }
+  .conta p { margin: 0 0 8px; font-size: 13.5px; color: var(--tinta-2); }
+  .conta p b { color: var(--tinta); }
+  .conta .sem { font-size: 12.5px; padding: 8px 12px; border-radius: 8px; background: var(--urgente-fundo); color: var(--urgente); }
+
+  /* futuro */
+  .futuro { background: var(--noite); color: var(--noite-texto); border-radius: 14px; padding: 24px 28px; }
+  .futuro h2 { margin-top: 0; }
+  .futuro h2::after { background: #29324a; }
+  .futuro p { color: var(--noite-suave); max-width: 66ch; }
+  .futuro b { color: var(--noite-texto); }
+  .futuro .mono { color: #e8a33d; }
+</style>
+
+<div class="pagina">
+  <header>
+    <p class="eyebrow">voice-onboard · mapa de contas e fluxos</p>
+    <h1>Porquê dois números — e quem faz o quê</h1>
+    <p class="sub">Seis serviços, cada um com um papel único. A confusão dos "dois números" resolve-se numa frase: <strong>um atende chamadas, o outro envia mensagens</strong> — são canais diferentes, de fornecedores diferentes.</p>
+  </header>
+
+  <h2>Os dois números</h2>
+  <div class="dois">
+    <div class="numero-card atende">
+      <div class="seta-direcao">📞 ⬅</div>
+      <span class="tag">Recebe chamadas</span>
+      <h3>Número da Retell</h3>
+      <div class="num">(a comprar · ~$2/mês)</div>
+      <p>É o <b>telefone da recepcionista</b>. Quem liga para ele ouve a Marta a atender em PT-PT.</p>
+      <p>Na demo: ligas-lhe diretamente. Com clientes reais: o número da empresa deles <b>desvia</b> para este quando ninguém atende.</p>
+      <p><b>Nunca envia SMS.</b> Só voz.</p>
+    </div>
+    <div class="numero-card envia">
+      <div class="seta-direcao">💬 ➡</div>
+      <span class="tag">Envia SMS</span>
+      <h3>Número da Twilio</h3>
+      <div class="num">+1 208 974 8700 · ~$1,15/mês</div>
+      <p>É o <b>remetente dos alertas</b>. Quando há uma urgência, o SMS que chega ao teu telemóvel sai deste número.</p>
+      <p>Enviar SMS é um serviço à parte da telefonia de voz — a Retell trata de conversas, a Twilio trata de mensagens.</p>
+      <p><b>Nunca atende chamadas.</b> Só mensagens.</p>
+    </div>
+  </div>
+
+  <h2>O fluxo completo, de ponta a ponta</h2>
+  <div class="quadro">
+    <svg class="fluxo" viewBox="0 0 900 480" role="img" aria-label="Fluxo: cliente liga ao número Retell, o agente atende; urgências vão pelo Railway e Twilio até ao dono; marcações vão ao Cal.com; o relatório diário sai por Gmail">
+      <defs>
+        <marker id="m" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--fio)"/></marker>
+        <marker id="ma" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--ambar-vivo)"/></marker>
+        <marker id="mu" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--urgente)"/></marker>
+        <marker id="mv" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--verde)"/></marker>
+        <marker id="mb" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--azul)"/></marker>
+      </defs>
+
+      <!-- cliente -->
+      <rect class="caixa" x="16" y="40" width="160" height="66" rx="10"/>
+      <text class="t" x="34" y="68">📱 Cliente com</text>
+      <text class="t" x="34" y="86">um cano rebentado</text>
+
+      <!-- numero retell -->
+      <rect class="caixa caixa-ambar" x="250" y="36" width="180" height="74" rx="10"/>
+      <text class="t" x="268" y="62">📞 Número Retell</text>
+      <text class="d" x="268" y="80">o telefone da recepcionista</text>
+      <text class="d" x="268" y="96">(demo: ligas para este)</text>
+      <path class="fio fio-ambar" d="M176 73 L250 73" marker-end="url(#ma)"/>
+      <text class="rot" x="186" y="64">liga</text>
+
+      <!-- agente -->
+      <rect class="caixa caixa-noite" x="500" y="20" width="220" height="106" rx="12"/>
+      <text class="t t-noite" x="518" y="48">🤖 Marta (Retell AI)</text>
+      <text class="d d-noite" x="518" y="68">atende em PT-PT, identifica-se</text>
+      <text class="d d-noite" x="518" y="84">como IA, faz triagem:</text>
+      <text class="d d-noite" x="518" y="102">urgência? marcação? recado?</text>
+      <path class="fio fio-ambar" d="M430 73 L500 73" marker-end="url(#ma)"/>
+
+      <!-- calcom -->
+      <rect class="caixa caixa-verde" x="700" y="170" width="184" height="70" rx="10"/>
+      <text class="t" x="716" y="196">📅 Cal.com</text>
+      <text class="d" x="716" y="214">agenda: vê horários livres</text>
+      <text class="d" x="716" y="230">e marca a visita</text>
+      <path class="fio fio-verde" d="M660 126 C 700 140, 740 150, 770 170" marker-end="url(#mv)"/>
+      <text class="rot" x="680" y="150">marcação</text>
+
+      <!-- railway -->
+      <rect class="caixa" x="440" y="190" width="200" height="92" rx="10"/>
+      <text class="t" x="458" y="216">🖥️ Railway (o teu servidor)</text>
+      <text class="d" x="458" y="234">recebe urgências e recados,</text>
+      <text class="d" x="458" y="250">guarda todas as chamadas,</text>
+      <text class="d" x="458" y="266">prepara o relatório das 08:00</text>
+      <path class="fio fio-urgente" d="M580 126 L555 190" marker-end="url(#mu)"/>
+      <text class="rot" x="588" y="160">urgência / recado</text>
+
+      <!-- twilio -->
+      <rect class="caixa caixa-azul" x="440" y="330" width="200" height="70" rx="10"/>
+      <text class="t" x="458" y="356">💬 Twilio</text>
+      <text class="d" x="458" y="374">envia o SMS de alerta a partir</text>
+      <text class="d" x="458" y="390">do +1 208 974 8700</text>
+      <path class="fio fio-urgente" d="M540 282 L540 330" marker-end="url(#mu)"/>
+
+      <!-- gmail -->
+      <rect class="caixa caixa-verde" x="180" y="330" width="200" height="70" rx="10"/>
+      <text class="t" x="198" y="356">✉️ Gmail</text>
+      <text class="d" x="198" y="374">envia o relatório diário</text>
+      <text class="d" x="198" y="390">às 8 da manhã</text>
+      <path class="fio fio-verde" d="M460 282 C 400 300, 330 310, 295 330" marker-end="url(#mv)"/>
+
+      <!-- dono -->
+      <rect class="caixa caixa-noite" x="300" y="430" width="260" height="40" rx="10"/>
+      <text class="t t-noite" x="318" y="455">📲 TU (dono do negócio)</text>
+      <path class="fio fio-urgente" d="M520 400 C 500 415, 480 422, 460 434" marker-end="url(#mu)"/>
+      <text class="rot" x="510" y="424">SMS em segundos</text>
+      <path class="fio fio-verde" d="M300 400 C 320 415, 340 422, 370 432" marker-end="url(#mv)"/>
+      <text class="rot" x="240" y="424">email 08:00</text>
+    </svg>
+    <div class="legenda">
+      <span><i style="background:var(--ambar-vivo)"></i>chamada de voz</span>
+      <span><i style="background:var(--urgente)"></i>urgência → SMS</span>
+      <span><i style="background:var(--verde)"></i>marcações e relatório</span>
+    </div>
+  </div>
+
+  <h2>As contas, uma a uma</h2>
+  <div class="contas">
+    <div class="conta">
+      <header><h3>Retell AI</h3><span class="preco">$0,07–0,12/min + $2/mês nº</span></header>
+      <p><b>A recepcionista.</b> Junta três coisas: o cérebro (GPT-4.1), a voz (ElevenLabs PT-PT) e a linha telefónica. Atende, conversa, decide o que fazer.</p>
+      <div class="sem">Sem ela: não há ninguém a atender. É o produto.</div>
+    </div>
+    <div class="conta">
+      <header><h3>Railway</h3><span class="preco">~$5/mês</span></header>
+      <p><b>O escritório de retaguarda.</b> Um servidor sempre ligado com o nosso código: recebe os pedidos da Marta ("avisa o técnico!", "regista este recado"), guarda o histórico e monta o relatório.</p>
+      <div class="sem">Sem ele: a Marta atende mas os alertas e registos não chegam a lado nenhum.</div>
+    </div>
+    <div class="conta">
+      <header><h3>Twilio</h3><span class="preco">~$1,15/mês + ~$0,08/SMS</span></header>
+      <p><b>O mensageiro.</b> Só faz uma coisa: quando o Railway diz "urgência!", dispara o SMS para o teu telemóvel a partir do número +1 208 974 8700.</p>
+      <div class="sem">Sem ela: ficas a saber das urgências só no relatório da manhã — tarde demais.</div>
+    </div>
+    <div class="conta">
+      <header><h3>Cal.com</h3><span class="preco">grátis</span></header>
+      <p><b>A agenda.</b> A Marta consulta os teus horários livres e marca visitas diretamente — o cliente recebe confirmação por email. Sincroniza com o Google Calendar se quiseres.</p>
+      <div class="sem">Sem ele: a Marta não pode marcar nada, só registar recados.</div>
+    </div>
+    <div class="conta">
+      <header><h3>Gmail</h3><span class="preco">grátis</span></header>
+      <p><b>O estafeta do relatório.</b> Às 8 da manhã, o Railway usa a tua conta Gmail para te enviar o resumo: chamadas, urgências, marcações, recados.</p>
+      <div class="sem">Sem ele: o relatório fica preso no servidor (vês no browser, mas não chega ao email).</div>
+    </div>
+    <div class="conta">
+      <header><h3>GitHub</h3><span class="preco">grátis</span></header>
+      <p><b>O estaleiro.</b> Guarda todo o código e documentação. Cada alteração enviada para lá é automaticamente construída e posta no ar pelo Railway.</p>
+      <div class="sem">Sem ele: não há onde desenvolver nem de onde fazer deploy.</div>
+    </div>
+  </div>
+
+  <h2 style="border:none">E com clientes reais? (produção)</h2>
+  <div class="futuro">
+    <p><b>O cliente final nunca vê nenhum destes números.</b> Ele continua a ligar para o número de sempre da empresa de arranjos. A magia é um desvio de 10 segundos no telemóvel do dono: <span class="mono">**61*número-do-agente#</span> — "se eu não atender, passa para a Marta".</p>
+    <p>A única mudança futura: o número da Retell passa a ser um <b>+351 português</b> (importado via Telnyx/Twilio, ~$1/mês), porque desviar chamadas para um número americano custaria ao dono tarifa internacional. O papel de cada conta mantém-se exatamente igual.</p>
+  </div>
+</div>
