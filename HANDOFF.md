@@ -7,7 +7,14 @@ Branch / git: `claude/context-overview-fiv9e5` (repo GitHub `Joak81/voiceAssista
 Montar o negócio de atendimento telefónico por IA fora de horas ("AI receptionist") para PMEs portuguesas, começando pelo nicho **pequenos arranjos e obras em casa** (decisão de 08-07: alargado de canalizadores/eletricistas para handyman/multiserviços — canalização, eletricidade, montagens, pinturas, estores, fechaduras, pequenas remodelações). Dois entregáveis: infraestrutura por cliente na Retell AI, e agente de onboarding em Claude Code que cria cada novo cliente em ~15 minutos.
 
 ## 2. Estado atual
-**Fase 1 da POC concluída** (sessão de 08-07-2026): serviço de webhooks implementado e testado (15 testes verdes + verificação local com payloads Retell assinados), script de deploy do agente pronto (`--dry-run` validado), prompt v1.1 generalizado ao nicho alargado, documentação completa (plano da POC, arquitetura com diagramas, setup operacional) e material de pitch (guião da demo, one-pager, deck). Falta o que exige contas/chaves do dono: deploy no Railway, criação do agente na Retell e QA real (fases 0, 2 e 3 do `docs/PLANO-POC.md`).
+**Fases 0–2 da POC concluídas** (09-07-2026): o sistema está VIVO em produção.
+- Railway: `https://voiceassistant-production-4750.up.railway.app` (projeto voice-onboard, volume /data, variáveis todas definidas; /health OK).
+- Agente Retell: `agent_27aace7dfe1c09958ca3627b54` (LLM `llm_a28bdf870e2e5fad80c867b33b64`), 5 tools, pt-PT, voz default `11labs-Adrian` (PT-PT por escolher).
+- **Número demo: +1 (270) 716-4091** — associado ao agente, pronto a atender.
+- Twilio: número +1 208 974 8700 a enviar SMS (teste real recebido no telemóvel do dono, +351 919 000 957, verificado).
+- Cal.com validado (event type 6253265, 48 slots). Gmail configurado (envio testa-se no relatório das 08:00).
+- Falta: **Fase 3 (QA humano)** — web calls com o checklist, audição/escolha da voz PT-PT (Mariza/Marta/Joana), chamada real; e Fase 5 (pós-POC).
+- Segredos: só no .env local da sessão e nas variáveis do Railway; nunca em git. `docs/mapa-contas.html` explica contas e fluxos.
 
 ## 3. Já feito
 - **Pesquisa técnica verificada (jul/2026)** com fontes: APIs Retell (tools, webhooks, assinatura), telefonia PT (+351 só via SIP trunk importado; desviar para número US = tarifa internacional → produção exige +351), vozes PT-PT (usar `eleven_flash_v2_5`; candidatas Mariza/Marta/Joana), Cal.com v2, Twilio trial, Railway.
