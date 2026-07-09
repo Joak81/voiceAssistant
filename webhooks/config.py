@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     timezone: str = "Europe/Lisbon"
     report_token: str = ""  # exigido no endpoint /relatorio/hoje
 
+    # Cal.com (dashboard: listar marcações reais)
+    calcom_api_key: str = ""
+
     # Negócio (usado nos textos de SMS/relatório)
     business_name: str = "Arranjos Horizonte"
 

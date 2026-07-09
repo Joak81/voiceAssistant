@@ -189,5 +189,24 @@ def dados_relatorio(db_path: str, desde_iso: str) -> dict:
     }
 
 
+def dados_dashboard(db_path: str, desde_iso: str) -> dict:
+    """Como dados_relatorio, mas com transcript (para expandir no dashboard)."""
+    dados = dados_relatorio(db_path, desde_iso)
+    with _ligar(db_path) as conn:
+        transcripts = dict(
+            conn.execute(
+                "SELECT call_id, transcript FROM chamadas"
+                " WHERE COALESCE(started_at, atualizado_em) >= ?",
+                (desde_iso,),
+            )
+        )
+    for c in dados["chamadas"]:
+        c["transcript"] = transcripts.get(c["call_id"])
+    dados["chamadas"].sort(key=lambda c: c["started_at"] or "", reverse=True)
+    dados["urgencias"].reverse()
+    dados["recados"].reverse()
+    return dados
+
+
 def raw_json(obj) -> str:
     return json.dumps(obj, ensure_ascii=False)

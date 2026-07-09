@@ -14,7 +14,9 @@ def cliente(tmp_path, monkeypatch):
     monkeypatch.setenv("DB_PATH", str(tmp_path / "teste.db"))
     monkeypatch.setenv("REPORT_TOKEN", "token-teste")
     monkeypatch.setenv("BUSINESS_NAME", "Arranjos Horizonte")
-    # sem credenciais Twilio/Gmail: os envios ficam em modo "não configurado"
+    # Sem credenciais externas nos testes. setenv("") em vez de delenv:
+    # um .env real na raiz seria lido pelo pydantic-settings, e as env vars
+    # (mesmo vazias) têm prioridade sobre o ficheiro.
     for var in (
         "TWILIO_ACCOUNT_SID",
         "TWILIO_AUTH_TOKEN",
@@ -23,8 +25,11 @@ def cliente(tmp_path, monkeypatch):
         "GMAIL_USER",
         "GMAIL_APP_PASSWORD",
         "OWNER_EMAIL",
+        "CALCOM_API_KEY",
+        "WEBHOOK_BASE_URL",
+        "RAILWAY_TOKEN",
     ):
-        monkeypatch.delenv(var, raising=False)
+        monkeypatch.setenv(var, "")
 
     from webhooks.config import get_settings
 
