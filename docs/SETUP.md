@@ -59,6 +59,7 @@ O script é idempotente: guarda `clients/demo/deploy.json` e nas execuções seg
 2. **SMS**: simular urgência na web call → SMS deve chegar ao telemóvel verificado.
 3. **Chamada real**: ligar ao número US comprado (tarifa internacional — chamadas curtas).
 4. **Relatório**: `curl "https://xxxx.up.railway.app/relatorio/hoje?token=<REPORT_TOKEN>"`; o email chega às 08:00 Lisboa.
+5. **Dashboard**: abrir `https://xxxx.up.railway.app/dashboard?token=<REPORT_TOKEN>` no browser — chamadas, urgências (com estado do SMS), marcações do Cal.com e recados, com auto-refresh. Guardar nos favoritos.
 
 ## 6. Desenvolvimento local
 

@@ -14,6 +14,7 @@ Montar o negócio de atendimento telefónico por IA fora de horas ("AI reception
 - **Número demo: +1 (270) 716-4091** — associado ao agente, pronto a atender.
 - Twilio: número +1 208 974 8700 a enviar SMS (teste real recebido no telemóvel do dono, +351 919 000 957, verificado).
 - Cal.com validado (event type 6253265, 48 slots). Gmail configurado (envio testa-se no relatório das 08:00).
+- **Dashboard do dono**: `GET /dashboard?token=<REPORT_TOKEN>` no serviço Railway — KPIs, urgências (estado do SMS), marcações reais do Cal.com, recados e chamadas com transcript. SMS corrigido para formato compacto ASCII (erro 30044 da trial: limite de segmentos) — entrega confirmada DELIVERED.
 - Falta: **Fase 3 (QA humano)** — web calls com o checklist, audição/escolha da voz PT-PT (Mariza/Marta/Joana), chamada real; e Fase 5 (pós-POC).
 - Segredos: só no .env local da sessão e nas variáveis do Railway; nunca em git. `docs/mapa-contas.html` explica contas e fluxos.
 
