@@ -81,6 +81,22 @@ def test_notificar_tecnico_grava_urgencia(cliente, db_path, monkeypatch):
     assert "cano rebentado" in enviados[0]
 
 
+def test_sms_urgencia_compacto_sem_acentos(cliente):
+    from webhooks.notify import texto_sms_urgencia
+
+    texto = texto_sms_urgencia(
+        nome="José Antão de Sousa e Melo da Câmara Pereira",
+        morada="Avenida General Humberto Delgado, número çento e vinte e três, "
+               "quarto esquerdo, São João da Talha, Loures",
+        telemovel="+351919000957",
+        problema="fuga de água no aquecedor çentral com inundação da cozinha "
+                 "e infiltração no teto do vizinho de baixo",
+    )
+    assert texto.isascii(), "acentos forçam UCS-2 e rebentam o limite da trial"
+    assert len(texto) <= 210, f"SMS com {len(texto)} chars excede 2 segmentos GSM-7"
+    assert "URGENTE" in texto and "+351919000957" in texto
+
+
 def test_registar_recado(cliente, db_path):
     payload = {
         "name": "registar_recado",
