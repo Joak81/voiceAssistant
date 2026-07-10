@@ -165,6 +165,8 @@ def payload_agente(llm_id: str, webhook_base: str) -> dict:
         # sem isto a rede telefónica engole o início da abertura de compliance
         "begin_message_delay_ms": 1200,
         "stt_mode": "accurate",
+        # ruído/monossílabos não devem cortar a abertura a meio (default é 1)
+        "interruption_sensitivity": 0.6,
         "webhook_url": f"{webhook_base}/retell/webhook",
         "post_call_analysis_data": [
             {

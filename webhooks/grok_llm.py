@@ -191,10 +191,28 @@ class _Sessao:
         self.tarefa: asyncio.Task | None = None
 
 
+# só neste motor: no custom LLM o Grok gera TODAS as falas, e a instrução do
+# prompt "inicia sempre a chamada com..." fá-lo-ia repetir a abertura sempre
+# que uma interrupção a deixasse incompleta no transcript.
+_NOTA_MOTOR = (
+    "\n\n## Nota do sistema (motor de conversação)\n\n"
+    "A abertura de compliance JÁ FOI reproduzida automaticamente no início da "
+    "chamada — aparece no histórico como a tua primeira fala, mesmo que surja "
+    "cortada. NUNCA repitas o nome da empresa, a identificação como IA nem o "
+    "aviso de gravação. Se fores interrompida, retoma a conversa do ponto em "
+    "que ia, sem recomeçar frases já ditas."
+)
+
+
+def _cliente_ja_falou(transcript: list[dict]) -> bool:
+    return any(u.get("role") == "user" and (u.get("content") or "").strip()
+               for u in transcript)
+
+
 async def _responder(ws: WebSocket, sessao: _Sessao, response_id: int,
                      transcript: list[dict]) -> None:
     system_prompt, _ = carregar_prompt()
-    messages = _mensagens(transcript, system_prompt)
+    messages = _mensagens(transcript, system_prompt + _NOTA_MOTOR)
 
     async def enviar(conteudo: str, completo: bool, end_call: bool = False) -> None:
         if response_id < sessao.ultimo_response_id:
@@ -206,6 +224,12 @@ async def _responder(ws: WebSocket, sessao: _Sessao, response_id: int,
             "content_complete": completo,
             "end_call": end_call,
         })
+
+    # cliente ainda não disse nada (silêncio ou interrupção fantasma no
+    # arranque): não pedir nada ao modelo — frase fixa, sem re-apresentação
+    if not _cliente_ja_falou(transcript):
+        await enviar("Está lá? Em que posso ajudar?", True)
+        return
 
     try:
         # até 3 rondas de tool calling

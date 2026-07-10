@@ -51,6 +51,26 @@ def test_reconexao_nao_repete_abertura(cliente):
         assert proximo == {"response_type": "ping_pong", "timestamp": 7}
 
 
+def test_cliente_calado_nao_reapresenta_nem_chama_xai(cliente, monkeypatch):
+    async def stream_proibido(messages, tools):
+        raise AssertionError("a xAI não pode ser chamada sem fala do cliente")
+        yield  # pragma: no cover
+
+    monkeypatch.setattr(grok, "_stream_xai", stream_proibido)
+    with cliente.websocket_connect("/llm-websocket/call_silencio") as ws:
+        ws.receive_json()  # config
+        # interrupção fantasma: transcript só tem a abertura (cortada) do agente
+        ws.send_json({
+            "interaction_type": "response_required",
+            "response_id": 1,
+            "transcript": [{"role": "agent", "content": "Arranjos Horizonte, boa noi"}],
+        })
+        m = ws.receive_json()
+        assert m["content"] == "Está lá? Em que posso ajudar?"
+        assert m["content_complete"] is True
+        assert "Arranjos Horizonte" not in m["content"]
+
+
 def test_ping_pong(cliente):
     with cliente.websocket_connect("/llm-websocket/call_ws2") as ws:
         ws.receive_json()  # config
