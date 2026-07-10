@@ -7,6 +7,9 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
 
 COPY webhooks ./webhooks
+# motor Grok (custom LLM) carrega o prompt e as variables do cliente
+COPY prompts ./prompts
+COPY clients ./clients
 
 # O Railway injeta a porta em $PORT; localmente usa 8000.
 # exec: o uvicorn substitui o sh e recebe o SIGTERM do Railway diretamente.

@@ -28,8 +28,15 @@ class Settings(BaseSettings):
     timezone: str = "Europe/Lisbon"
     report_token: str = ""  # exigido no endpoint /relatorio/hoje
 
-    # Cal.com (dashboard: listar marcações reais)
+    # Cal.com (dashboard + tools de agenda no motor Grok)
     calcom_api_key: str = ""
+    calcom_event_type_id: int = 0
+
+    # Motor Custom LLM (Grok via xAI) — usado quando o agente aponta ao websocket
+    xai_api_key: str = ""
+    grok_model: str = "grok-4.1-fast"
+    prompt_path: str = "prompts/prompt-agente-demo-arranjos-casa.md"
+    variables_path: str = "clients/demo/variables.json"
 
     # Negócio (usado nos textos de SMS/relatório)
     business_name: str = "Arranjos Horizonte"

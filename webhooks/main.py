@@ -9,7 +9,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from fastapi import FastAPI, Header, HTTPException
 
-from . import dashboard, events, tools
+from . import dashboard, events, grok_llm, tools
 from .config import get_settings
 from .report import gerar_relatorio, job_relatorio_diario
 from .storage import init_db
@@ -44,6 +44,7 @@ app = FastAPI(title="voice-onboard webhooks", lifespan=lifespan)
 app.include_router(tools.router)
 app.include_router(events.router)
 app.include_router(dashboard.router)
+app.include_router(grok_llm.router)
 
 
 @app.get("/health")

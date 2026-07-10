@@ -15,6 +15,7 @@ Montar o negócio de atendimento telefónico por IA fora de horas ("AI reception
 - Twilio: número +1 208 974 8700 a enviar SMS (teste real recebido no telemóvel do dono, +351 919 000 957, verificado).
 - Cal.com validado (event type 6253265, 48 slots). Gmail configurado (envio testa-se no relatório das 08:00).
 - **Dashboard do dono**: `GET /dashboard?token=<REPORT_TOKEN>` no serviço Railway — KPIs, urgências (estado do SMS), marcações reais do Cal.com, recados e chamadas com transcript. SMS corrigido para formato compacto ASCII (erro 30044 da trial: limite de segmentos) — entrega confirmada DELIVERED.
+- **Motor Grok (custom LLM)**: `webhooks/grok_llm.py` implementa o protocolo Custom LLM da Retell em `wss://<railway>/llm-websocket/{call_id}` com Grok (xAI, `grok-4.1-fast`, OpenAI-compatível) e os 5 tools executados in-process (agenda via Cal.com API, urgências/recados via storage+notify). Trocar de motor: `scripts/mudar_motor.py grok|retell` (rollback a um comando; o retell-llm GPT-4.1 continua criado). Requer `XAI_API_KEY` no Railway/.env. O pós-chamada (call_analyzed→dashboard/relatório) não muda.
 - Falta: **Fase 3 (QA humano)** — web calls com o checklist, audição/escolha da voz PT-PT (Mariza/Marta/Joana), chamada real; e Fase 5 (pós-POC).
 - Segredos: só no .env local da sessão e nas variáveis do Railway; nunca em git. `docs/mapa-contas.html` explica contas e fluxos.
 
