@@ -162,6 +162,9 @@ def payload_agente(llm_id: str, webhook_base: str) -> dict:
         # cada fornecedor TTS tem os seus voice_models — ajustar se a voz não for ElevenLabs
         "voice_model": os.environ.get("RETELL_VOICE_MODEL", "eleven_flash_v2_5"),
         "language": "pt-PT",
+        # sem isto a rede telefónica engole o início da abertura de compliance
+        "begin_message_delay_ms": 1200,
+        "stt_mode": "accurate",
         "webhook_url": f"{webhook_base}/retell/webhook",
         "post_call_analysis_data": [
             {

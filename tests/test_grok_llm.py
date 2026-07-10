@@ -36,6 +36,21 @@ def test_handshake_config_e_abertura(cliente):
         assert abertura["content_complete"] is True
 
 
+def test_reconexao_nao_repete_abertura(cliente):
+    # 1.ª ligação: abertura enviada
+    with cliente.websocket_connect("/llm-websocket/call_reconn") as ws:
+        ws.receive_json()  # config
+        ws.send_json({"interaction_type": "call_details", "call": {}})
+        assert "assistente virtual" in ws.receive_json()["content"]
+    # reconexão (auto_reconnect): call_details repetido NÃO pode reapresentar
+    with cliente.websocket_connect("/llm-websocket/call_reconn") as ws:
+        ws.receive_json()  # config
+        ws.send_json({"interaction_type": "call_details", "call": {}})
+        ws.send_json({"interaction_type": "ping_pong", "timestamp": 7})
+        proximo = ws.receive_json()
+        assert proximo == {"response_type": "ping_pong", "timestamp": 7}
+
+
 def test_ping_pong(cliente):
     with cliente.websocket_connect("/llm-websocket/call_ws2") as ws:
         ws.receive_json()  # config

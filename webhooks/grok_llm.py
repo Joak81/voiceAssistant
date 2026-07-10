@@ -26,6 +26,11 @@ log = logging.getLogger("voice-onboard.grok")
 
 router = APIRouter()
 
+# call_ids que já ouviram a abertura — com auto_reconnect a Retell reabre o
+# websocket a meio da chamada e reenvia call_details; sem isto a Marta
+# repetiria a apresentação a meio da conversa.
+_aberturas_enviadas: set[str] = set()
+
 TOOLS = [
     {
         "type": "function",
@@ -289,13 +294,17 @@ async def llm_websocket(ws: WebSocket, call_id: str) -> None:
                 await ws.send_json({"response_type": "ping_pong",
                                     "timestamp": pedido.get("timestamp")})
             elif tipo == "call_details":
-                await ws.send_json({
-                    "response_type": "response",
-                    "response_id": 0,
-                    "content": abertura,
-                    "content_complete": True,
-                    "end_call": False,
-                })
+                if call_id not in _aberturas_enviadas:
+                    _aberturas_enviadas.add(call_id)
+                    if len(_aberturas_enviadas) > 5000:
+                        _aberturas_enviadas.clear()
+                    await ws.send_json({
+                        "response_type": "response",
+                        "response_id": 0,
+                        "content": abertura,
+                        "content_complete": True,
+                        "end_call": False,
+                    })
             elif tipo in ("response_required", "reminder_required"):
                 response_id = pedido.get("response_id", 0)
                 sessao.ultimo_response_id = max(sessao.ultimo_response_id, response_id)
