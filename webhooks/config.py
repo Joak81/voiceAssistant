@@ -34,7 +34,7 @@ class Settings(BaseSettings):
 
     # Motor Custom LLM (Grok via xAI) — usado quando o agente aponta ao websocket
     xai_api_key: str = ""
-    grok_model: str = "grok-4.1-fast"
+    grok_model: str = "grok-4.20-0309-non-reasoning"
     prompt_path: str = "prompts/prompt-agente-demo-arranjos-casa.md"
     variables_path: str = "clients/demo/variables.json"
 

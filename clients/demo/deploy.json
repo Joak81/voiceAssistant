@@ -3,5 +3,7 @@
   "agent_id": "agent_27aace7dfe1c09958ca3627b54",
   "phone_number": "+12707164091",
   "webhook_base_url": "https://voiceassistant-production-4750.up.railway.app",
-  "atualizado_em": "2026-07-09T19:31:01+00:00"
+  "atualizado_em": "2026-07-09T19:31:01+00:00",
+  "grok_agent_id": "agent_02613774fdca1beb14cc95965d",
+  "motor_ativo": "grok"
 }
