@@ -29,6 +29,9 @@ Montar o negócio de atendimento telefónico por IA fora de horas ("AI reception
 - Deploy: `Dockerfile` + `railway.json` (healthcheck; o modo serverless/sleep desliga-se no dashboard — ver SETUP §2.5). `.env.example` completo.
 - Decisões anteriores mantidas: pricing €79/129/179 + setup €200–400; GTM demo ao vivo; compliance inviolável.
 
+## 3.1 Número +351 (investigação de 22-07 — ver docs/NUMERO-PT.md)
+Portugal foi REMOVIDO do catálogo self-service da Twilio entre mar-jul/2026 (provado por Wayback do CSV oficial); única oferta pública é $135/mês. Bundle "Mobile-Individual" da conta está aprovado (BUf69a8ea0…) e serve para um Exclusive Number order (formulário "Can't find a Number" na consola; 1-4 semanas; perguntar preço). Caminho recomendado por custo: Zadarma/DIDWW (~€2-5/mês, particulares OK) + Dial-to-SIP para a Retell. Plano B de arquitetura documentado: Twilio ConversationRelay/Agent Connect (substituiria a Retell; custo semelhante, mais engenharia — não migrar na POC).
+
 ## 4. Por fazer (próximos passos)
 1. **Fase 0 do PLANO-POC** (dono): criar contas Retell/Twilio/Cal.com/Railway/Gmail app password — checklist em `docs/PLANO-POC.md`.
 2. **Fase 2**: deploy Railway (variables + volume `/data` + domínio) e `uv run python scripts/setup_retell.py --buy-number`. Guia: `docs/SETUP.md`.
